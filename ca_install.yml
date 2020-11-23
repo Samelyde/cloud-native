@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    proxy_env:
+      http_proxy: http://proxy.rennes.enst-bretagne.fr:3128
+      https_proxy: https://proxy.rennes.enst-bretagne.fr:3128
+
+  tasks:
+  - name: Download root-ca
+    get_url:
+      url: http://www.cloud.rennes.enst-bretagne.fr/files/docker-lab/root-ca.crt
+      dest: /usr/local/share/ca-certificates  
+    environment: "{{ proxy_env }}"
+  - name: update certificates
+    shell: update-ca-certificates
+

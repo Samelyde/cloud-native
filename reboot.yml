@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+  
+  task:
+  - name: Unconditionally reboot the machine with all defaults
+    reboot:

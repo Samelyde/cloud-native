@@ -1,0 +1,242 @@
+---
+
+openapi: '3.0.0'
+info:
+  title: Photo service API
+  version: "0.1"
+
+paths:
+  /gallery/{display_name}:
+    post:
+      operationId: photo_service.post_photo
+      summary: Upload a new photo for the photographer identified by display_name.
+      parameters:
+        - in: path
+          name: display_name
+          required: true
+          schema:
+            $ref: '#/components/schemas/display_name'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Photo'
+      responses:
+        '201':
+          description: New photo created.
+          headers:
+            location:
+              schema:
+                type: string
+                description: URI of photo
+        '404':
+          description: Photographer does not exist.
+        '409':
+          description: Photo already exists.
+            
+    get:
+      operationId: photo_service.get_photos
+      summary: Obtain a JSON array of the URIs for the photos taken by the photographer identified by display_name.
+      parameters:
+        - in: path
+          name: display_name
+          required: true
+          schema:
+            $ref: '#/components/schemas/display_name'
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+      responses:
+        '200':
+          description: Return the requested JSON array of the URIs for the photos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photos'
+  
+  /photo/{display_name}/{photo_id}:
+    get:
+      operationId: photo_service.get_photo_by_id
+      summary: Obtain the photo identified by photo_id taken by the photographer identified by display_name.
+      parameters:
+        - in: path
+          name: display_name
+          required: true
+          schema:
+            $ref: '#/components/schemas/display_name'
+        - in: path
+          name: photo_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/photo_id'
+      responses:
+        '200':
+          description: Return photo.
+          content:
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Photo does not exist.
+
+    delete:
+      operationId: photo_service.delete_photo_by_id
+      summary: Delete the photo identified by photo_id taken by the photographer identified by display_name.
+      parameters:
+        - in: path
+          name: display_name
+          required: true
+          schema:
+            $ref: '#/components/schemas/display_name'
+        - in: path
+          name: photo_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/photo_id'
+      responses:
+        '204':
+          description: Photo was deleted.
+        '404':
+          description: Photo does not exist.
+
+  /photo/{display_name}/{photo_id}/attributes:
+    get:
+      operationId: photo_service.get_attributes_by_id
+      summary: Obtain the attributes of the photo identified by photo_id taken by the photographer identified by display_name.
+      parameters:
+        - in: path
+          name: display_name
+          required: true
+          schema:
+            $ref: '#/components/schemas/display_name'
+        - in: path
+          name: photo_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/photo_id'
+      responses:
+        '200':
+          description: Return the attributes of the requested photo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo_attributes'
+        '404':
+          description: Photo does not exist.
+
+    put:
+      operationId: photo_service.set_attributes_by_id
+      summary: Set the attributes the photo identified by photo_id taken by the photographer identified by display_name.
+      parameters:
+        - in: path
+          name: display_name
+          required: true
+          schema:
+            $ref: '#/components/schemas/display_name'
+        - in: path
+          name: photo_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/photo_id'
+      requestBody:
+        description: Info update to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Photo_attributes'
+      responses:
+        '201':
+          description: Photo updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo_attributes'
+        '404':
+          description: Photo does not exist.
+components:
+  schemas:
+    display_name:
+      type: string
+      minLength: 1
+      maxLength: 15
+      example: "rdoisneau"
+
+    Photo_attributes:
+      type: object
+      description: "The attributes of the photo"
+      properties:
+        title:
+          type: string
+          description: "The title of the photo"
+          minLength: 1
+          maxLength: 25
+          example: "Rabbit"
+        location:
+          type: string
+          description: "The location of the photo"
+          minLength: 1
+          maxLength: 25
+          example: "Rennes"
+        comment:
+          type: string
+          description: "The comment"
+          minLength: 1
+          maxLength: 50
+          example: "A beautiful photo"
+        tags:
+          type: array
+          description: "List of tags"
+          items:
+            type: string
+            minLength: 1
+            maxLength: 15
+          minLength: 1
+          example: ["animal", "wild"]
+      required:
+        - title
+        - location
+        - comment
+        - tags
+
+    photo_id:
+      type: string    
+
+    Photo:
+      description: "A photo"
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+
+    PhotoDigest:
+      description: "A photo link"
+      type: object
+      properties:
+        link:
+          type: string
+      required:
+        - link
+
+    Photos:
+      type: object
+      description: "An array of photos and a boolean to indicate if there is more photos"
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhotoDigest'
+        has_more:
+          type: boolean
+

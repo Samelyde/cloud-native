@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photo-service-deployment
+  labels:
+    app: photo-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: photo-service
+  template:
+    metadata:
+      labels:
+        app: photo-service
+    spec:
+      containers:
+      - name: photo-service
+        image: gitlab-devops.cloud.rennes.enst-bretagne.fr:4567/l20same/devops-f20-02/photo
+        ports:
+        - containerPort: 80
+      - name: photographer-service
+        image: gitlab-devops.cloud.rennes.enst-bretagne.fr:4567/l20same/devops-f20-02/photographer
+        ports:
+        - containerPort: 80
+      - name: tag-service
+        image: gitlab-devops.cloud.rennes.enst-bretagne.fr:4567/l20same/devops-f20-02/tags
+        ports:
+        - containerPort: 50051
+      imagePullSecrets:
+      - name: regcred
+

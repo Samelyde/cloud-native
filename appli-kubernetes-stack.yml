@@ -1,0 +1,119 @@
+heat_template_version: rocky
+
+description: Template for six openstacks servers for kubernetes.
+
+parameters:
+  ssh_keys:
+    type: comma_delimited_list
+
+resources:
+  OSServer_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: "private_net"
+      security_groups: ["internal_security_group"]
+      fixed_ips:
+        - subnet_id: "private_subnet"
+          ip_address: 192.168.10.5
+
+  OSServer_port1:
+    type: OS::Neutron::Port
+    properties:
+      network_id: "private_net"
+      security_groups: ["internal_security_group"]
+      fixed_ips:
+        - subnet_id: "private_subnet"
+          ip_address: 192.168.10.6
+
+  OSServer_port2:
+    type: OS::Neutron::Port
+    properties:
+      network_id: "private_net"
+      security_groups: ["internal_security_group"]
+      fixed_ips:
+        - subnet_id: "private_subnet"
+          ip_address: 192.168.10.7
+
+  OSServer_port3:
+    type: OS::Neutron::Port
+    properties:
+      network_id: "private_net"
+      security_groups: ["internal_security_group"]
+      fixed_ips:
+        - subnet_id: "private_subnet"
+          ip_address: 192.168.10.8
+
+  OSServer_port4:
+    type: OS::Neutron::Port
+    properties:
+      network_id: "private_net"
+      security_groups: ["internal_security_group"]
+      fixed_ips:
+        - subnet_id: "private_subnet"
+          ip_address: 192.168.10.9
+
+  OSServer_port5:
+    type: OS::Neutron::Port
+    properties:
+      network_id: "private_net"
+      security_groups: ["internal_security_group"]
+      fixed_ips:
+        - subnet_id: "private_subnet"
+          ip_address: 192.168.10.10
+
+  OSServer1:
+    type: vm-template.yaml
+    properties:
+      name: OSServer1
+      flavor: s10.small
+      network_port: { get_resource: OSServer_port}
+      ssh_keys: {get_param: ssh_keys}
+
+  OSServer2:
+    type: vm-template.yaml
+    properties:
+      name: OSServer2
+      flavor: s10.small
+      network_port: { get_resource: OSServer_port1}
+      ssh_keys: {get_param: ssh_keys}
+
+  OSServer3:
+    type: vm-template.yaml
+    properties:
+      name: OSServer3
+      flavor: s10.small
+      network_port: { get_resource: OSServer_port2}
+      ssh_keys: {get_param: ssh_keys}
+
+  OSServer4:
+    type: vm-template.yaml
+    properties:
+      name: OSServer4
+      flavor: s10.small
+      network_port: { get_resource: OSServer_port3}
+      ssh_keys: {get_param: ssh_keys}
+
+  OSServer5:
+    type: vm-template.yaml
+    properties:
+      name: OSServer5
+      flavor: s10.small
+      network_port: { get_resource: OSServer_port4}
+      ssh_keys: {get_param: ssh_keys}
+
+  OSServer6:
+    type: vm-template.yaml
+    properties:
+      name: OSServer6
+      flavor: s10.small
+      network_port: { get_resource: OSServer_port5}
+      ssh_keys: {get_param: ssh_keys}
+
+ 
+  
+     
+            
+      
+
+
+

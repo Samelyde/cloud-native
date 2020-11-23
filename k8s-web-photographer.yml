@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: photographer-service
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: photographer-service
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photographer-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: photographer-service
+  template:
+    metadata:
+      labels:
+        app: photographer-service
+    spec:
+      containers:
+        - name: photographer-service
+          image: gitlab-devops.cloud.rennes.enst-bretagne.fr:4567/l20same/devops-f20-02/photographer:latest
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: registry-secret

@@ -1,0 +1,74 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    proxy_env:
+      http_proxy: http://proxy.rennes.enst-bretagne.fr:3128
+      https_proxy: https://proxy.rennes.enst-bretagne.fr:3128
+
+  tasks:
+  - name: Update 
+    apt:
+      name: "*"
+      state: latest
+    environment: "{{ proxy_env }}"
+  - name: Install certificates      
+    apt: name={{item}} state=latest update_cache=yes
+    loop: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common']
+    environment: "{{ proxy_env }}"
+  - name: Download key
+    apt_key: 
+      data: "{{ lookup('url','https://download.docker.com/linux/ubuntu/gpg', split_lines=False)}}"
+      state: present
+    environment: "{{ proxy_env }}"
+  - name: Add repo 
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+  - name: Update 
+    apt:
+      name: "*"
+      state: latest 
+    environment: "{{ proxy_env }}"
+
+  - name: Install Docker        
+    apt: name={{item}} state=latest update_cache=yes
+    loop: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    environment: "{{ proxy_env }}"
+
+  - name: This command will run on the shell
+    shell:
+      cmd: usermod -aG docker $USER
+  - name: Add line to file
+    lineinfile:
+      path: /lib/systemd/system/docker.service
+      insertafter: EOF
+      create: yes
+      state: present
+      line: Environment="HTTP_PROXY=http://proxy.rennes.enst-bretagne.fr:3128" "HTTPS_PROXY=https://proxy.rennes.enst-bretagne.fr:3128" "NO_PROXY=gitlab-devops.cloud.rennes.enst-bretagne.fr:4567"
+  - name: restart docker 
+    shell: systemctl daemon-reload
+  - name: restart docker 
+    shell: systemctl restart docker
+      
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      state: started
+        

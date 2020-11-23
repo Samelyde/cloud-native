@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-app
+  labels:
+    app: photoApp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: photoApp
+  template:
+    metadata:
+      labels:
+        app: photoApp
+    spec:
+      containers:
+      - name: tags
+        image: gitlab-devops.cloud.rennes.enst-bretagne.fr:4567/l20same/devops-f20-02/tags
+        ports:
+        - containerPort: 50051
+      - name: photo
+        image: gitlab-devops.cloud.rennes.enst-bretagne.fr:4567/l20same/devops-f20-02/photo
+      - name: photographer
+        image: gitlab-devops.cloud.rennes.enst-bretagne.fr:4567/l20same/devops-f20-02/photographer
+        
+      imagePullSecrets:
+      - name: regcred

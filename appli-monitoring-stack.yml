@@ -1,0 +1,25 @@
+heat_template_version: rocky
+
+description: Sample template for a Monitoring VM
+parameters:
+  ssh_keys:
+    type: comma_delimited_list
+
+resources:
+
+   monitoringVM_port:
+    type: OS::Neutron:port
+    properties:
+      network_id: "private_net"
+      security_groups: ["internal_security_group", "ssh_security_group"]
+      fixed_ips:
+        - subnet_id: "private_subnet"
+          ip_address: 192.168.10.4
+
+  monitoringVM:
+    type: vm-template.yaml
+    properties:
+      name: monitoringVM
+      flavor: s10.small
+      network_port: { get_resource: monitoringVM_port}
+      ssh_keys: {get_param: ssh_keys}

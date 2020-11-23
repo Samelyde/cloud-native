@@ -1,0 +1,26 @@
+---
+- hosts: mongo
+
+  tasks:
+  - name: Download key
+      apt_key: 
+        data: "{{ lookup('url','https://www.mongodb.org/static/pgp/server-4.4.asc', split_lines=False)}}"
+        state: present
+  -  name: Add repo 
+       apt_repository:
+         repo: deb https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse
+         filename: mongodb-org-4.4.list
+  -  name: Update 
+       apt:
+         name: "*"
+         state: latest 
+  -  name: Install Mongo       
+       apt: 
+         name: mongodb-org
+         state: present
+  -  name: Install Mongo
+       service:
+         name: mongod
+         state: started
+        
+         
